@@ -1,6 +1,7 @@
 import hlt
 import math
 import pdb
+import heapq
 # areas_per_side
 
 class MapManager:
@@ -8,6 +9,7 @@ class MapManager:
         # my_id : our player ID
         self.len = len
         self.game_map = game_map
+        self.player = player_me
         self.my_id = player_me.id
         self.tot_hal = 0
         self.n_players = 0
@@ -88,6 +90,7 @@ class MapManager:
         return self.area_arr[max_i][max_j]
 
     def local_max_dense(self,source,radius):
+        #
         max_density = 0
         max_i = -1
         max_j = -1
@@ -116,6 +119,46 @@ class MapManager:
         j = round(source.y/self.len)
 
         return i,j
+
+    def smart_rand_dense(self,source,turn_num):
+        max_r = self.game_map.width/2
+        min_r = 8
+        range_ = max_r - min_r
+        interp_x = range_*turn_num/500
+        search_r = min_r + interp_x
+        area = self.local_max_dense(source,search_r)
+        return area
+
+    def local_high_dense(self,radius,num):
+        # make sure num of 4x4 areas is within the radius
+        dense_area_list = []
+        shipyard = self.player.shipyard
+        source_i,source_j = self.current_area_idx(shipyard.position)
+        idx_space = int(round(radius / self.len))
+        div = len(self.area_arr[0])
+        i_1 = (source_i - idx_space) % div
+        i_2 = (source_i + idx_space) % div
+        j_1 = (source_j - idx_space) % div
+        j_2 = (source_j + idx_space) % div
+        for i in range(i_1,i_2):
+            for j in range(j_1,j_2):
+                tmp_den = self.area_arr[i][j].density
+                if len(dense_area_list) < num:
+                    dense_area_list.append(self.area[i][j])
+                else:
+                    min = 100000
+                    idx = -1
+                    for k in range(len(dense_area_list)):
+                        tmp_min = area.density
+                        if tmp_min < min:
+                            min = tmp_min
+                            idx = k
+                    if tmp_min < tmp_den:
+                        dense_area_list[idx] = self.area[i][j]
+
+        return dense_area_list
+
+    #def most_dank_cell(self,area):
 
 
 
