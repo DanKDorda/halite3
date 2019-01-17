@@ -85,7 +85,7 @@ class MapManager:
                     max_i = i
                     max_j = j
 
-        return self.area_arr[i][j]
+        return self.area_arr[max_i][max_j]
 
     def max_dense_spec(self,source,radius):
         max_density = 0
