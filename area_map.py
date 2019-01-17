@@ -47,7 +47,7 @@ class MapManager:
                 #self.area_arr.append(area_ij)
                 i_arr.append(area_ij)
                 self.tot_hal += area_ij.hal
-            self.area_arr.append(area_ij)
+            self.area_arr.append(i_arr)
 
     def get_n_players(self):
         for player in self.game_map.players:
@@ -67,10 +67,11 @@ class MapManager:
     def update(self,game_map):
         self.game_map = game_map
         self.tot_hal = 0
-        for area in self.area_arr:
-            self.area_stats(area)
-            area.update()
-            self.tot_hal += area.hal
+        for list in self.area_arr:
+            for area in list:
+                self.area_stats(area)
+                area.update()
+                self.tot_hal += area.hal
 
     def max_dense_area(self):
         max_density = 0
@@ -90,7 +91,7 @@ class MapManager:
         max_density = 0
         max_i = -1
         max_j = -1
-        
+
 
 class Area:
     #let boundaries = [x1 y1 x2 y2]
