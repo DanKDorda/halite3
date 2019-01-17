@@ -14,6 +14,7 @@ class MapManager:
         self.area_arr = []
         self.tot_hal = 0
         self.area_arr = []
+        self.idx_arr = []
         self.get_area_arr()
 
     def get_area_arr(self):
@@ -21,7 +22,6 @@ class MapManager:
         q = int((self.game_map.width - r) / self.len) # q = num of area sections per dimension
 
         len_arr = []
-        idx_arr = []
         idx = 0
         n = 0
         for i in range(q):
@@ -32,14 +32,14 @@ class MapManager:
             len_arr.append(len)
             if i != 0:
                 idx += len
-            idx_arr.append(idx)
+            self.idx_arr.append(idx)
             n += 1
 
         for i in range(n-1):
             i_arr = []
             for j in range(n-1):
-                centroid_x = math.floor((idx_arr[i]+idx_arr[i+1])/2)
-                centroid_y = math.floor((idx_arr[j]+idx_arr[j+1])/2)
+                centroid_x = math.floor((self.idx_arr[i]+self.idx_arr[i+1])/2)
+                centroid_y = math.floor((self.idx_arr[j]+self.idx_arr[j+1])/2)
                 centroid = hlt.Position(centroid_x, centroid_y)
                 len = len_arr[i]
                 area_ij = Area(centroid,len)
@@ -87,10 +87,38 @@ class MapManager:
 
         return self.area_arr[max_i][max_j]
 
-    def max_dense_spec(self,source,radius):
+    def local_max_dense(self,source,radius):
         max_density = 0
         max_i = -1
         max_j = -1
+        idx_space = int(round(radius / self.len))
+        if idx_space == 0:
+            idx_space = 1
+        source_i,source_j = self.current_area_idx(source)
+
+        div = len(self.area_arr[0])
+        i_1 = (source_i - idx_space) % div
+        i_2 = (source_i + idx_space) % div
+        j_1 = (source_j - idx_space) % div
+        j_2 = (source_j + idx_space) % div
+        for i in range(i_1,i_2):
+            for j in range(j_1,j_2):
+                tmp_den = self.area_arr[i][j].density
+                if tmp_den > max_density:
+                    max_density = tmp_den
+                    max_i = i
+                    max_j = j
+        return self.area_arr[max_i][max_j]
+
+
+    def current_area_idx(self,source):
+        i = round(source.x/self.len)
+        j = round(source.y/self.len)
+
+        return i,j
+
+
+
 
 
 class Area:
