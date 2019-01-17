@@ -42,7 +42,7 @@ while True:
     # You extract player metadata and the updated map metadata here for convenience.
     me = game.me
     game_map = game.game_map
-    map_manager.update(game_map)
+    Eight_map_manager.update(game_map)
     most_dense_area = map_manager.max_dense_area()
 
     # A command queue holds all the commands you will run this turn. You build this list up and submit it at the
